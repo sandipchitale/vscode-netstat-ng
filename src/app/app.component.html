@@ -1,0 +1,110 @@
+<div class="wrapper">
+  <p-toolbar [style]="{ 'border-top': '1px solid var(--vscode-editorGroup-border)','border-bottom': '1px solid var(--vscode-editorGroup-border)' }">
+    <div class="p-toolbar-group-left" style="flex: 1 1 auto">
+      <!-- <p-button
+        [disabled]="true"
+        pTooltip="Delete selected"
+        icon="pi pi-times"
+        styleClass="p-button-danger p-button-sm">
+      </p-button> -->
+      <label for="ports" class="ml-2">Ports:</label>
+      <input pInputText
+        type="text"
+        [(ngModel)]="ports"
+        class="ml-4"
+        style="flex: 1 1 auto"
+        id="ports"
+        (keydown.enter)="netstat()"/>
+      <div class="ml-4">
+        <!-- <p-checkbox [(ngModel)]="linkWithExplorer" [binary]="true"></p-checkbox> -->
+        <p-selectButton
+          [multiple]="true"
+          [options]="portStates"
+          optionIcon="icon"
+          [(ngModel)]="selectedPortStates"
+          (onChange)="netstat()">
+          <ng-template let-portState>
+            <i [class]="portState.icon + ' ' + 'p-1'" [title]="portState.mode"></i>
+          </ng-template>
+        </p-selectButton>
+      </div>
+      <p-checkbox [(ngModel)]="autoRefresh" binary="true" inputId="autoRefresh" class="ml-4"></p-checkbox>
+      <label for="autoRefresh" class="ml-2">Auto refresh</label>
+      <p-button
+        pTooltip="Refresh"
+        icon="pi pi-replay"
+        [disabled]="autoRefresh"
+        styleClass="p-button-success p-button-sm ml-3 mr-2"
+        (click)="netstat()">
+      </p-button>
+    </div>
+  </p-toolbar>
+  <main>
+    <p-table
+      [value]="netstatRecords"
+      selectionMode="single"
+      [(selection)]="selectedNetstatRecords"
+      [resizableColumns]="true"
+      styleClass="p-datatable-sm"
+      responsiveLayout="scroll"
+      [scrollable]="true"
+      scrollHeight="flex">
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col [style.width]="'7%'">
+          <col [style.width]="'20%'">
+          <col [style.width]="'10%'">
+          <col [style.width]="'20%'">
+          <col [style.width]="'10%'">
+          <col [style.width]="'20%'">
+          <col [style.width]="'8%'">
+          <col [style.width]="'2rem'">
+        </colgroup>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pResizableColumn class="p-pl-3">Protocol</th>
+          <th pResizableColumn>Local Address</th>
+          <th pResizableColumn pSortableColumn="localPort" class="p-jc-end">Local Port  <p-sortIcon field="localPort"></p-sortIcon></th>
+          <th pResizableColumn>Foreign Address</th>
+          <th pResizableColumn pSortableColumn="foreignPort" class="p-jc-end">Foreign Port <p-sortIcon field="foreignPort"></p-sortIcon></th>
+          <th pResizableColumn pSortableColumn="state">State <p-sortIcon field="state"></p-sortIcon></th>
+          <th pResizableColumn pSortableColumn="pid" class="p-jc-end">PID <p-sortIcon field="pid"></p-sortIcon></th>
+          <th class="p-jc-end">Kill Process</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-netstatRecord>
+        <tr>
+          <td class="p-pl-3">{{ netstatRecord.proto }}</td>
+          <td>{{ netstatRecord.localAddress }}</td>
+          <td>
+            <div class="flex justify-content-end p-text-bold">
+              {{ netstatRecord.localPort }}
+            </div>
+          </td>
+          <td>{{ netstatRecord.foreignAddress }}</td>
+          <td>
+            <div class="flex justify-content-end">
+              {{ netstatRecord.foreignPort }}
+            </div>
+          </td>
+          <td>{{ netstatRecord.state }}</td>
+          <td>
+            <div class="flex justify-content-end p-text-bold">
+              {{ netstatRecord.pid }}
+            </div>
+          </td>
+          <td>
+            <div class="flex justify-content-center">
+              <p-button
+                icon="pi pi-times"
+                styleClass="p-button-danger p-button-sm"
+                (click)="killProcess(netstatRecord.pid)">
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </main>
+</div>
